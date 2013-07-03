@@ -1,8 +1,8 @@
-class CharacterHitGround:
+class ShipHitGround:
     pass
 
 
-class CharacterHitEnemy:
+class ShipHitEnemy:
     pass
 
 
