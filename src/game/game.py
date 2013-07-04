@@ -7,7 +7,7 @@ from base.movable import *
 
 class Game:
     def __init__(self):
-        self.graphics = Graphics(640, 480)
+        self.graphics = Graphics(320, 480)
         self.world = World(640, 480, None)
 
         self.world.ship = Ship(pygame.Rect(100, 100, self.graphics.ship_image.get_width(), self.graphics.ship_image.get_height()))
@@ -22,10 +22,14 @@ class Game:
             dt = clock.tick(60)
             self.handle_events()
             self.world.iterate(dt)
-            
+            self.calculate_camera()
+
             self.graphics.screen.fill((10, 50, 200))
-            self.graphics.screen.blit(self.graphics.terrain, (0, 0))
-            self.graphics.screen.blit(self.graphics.ship_image, tuple(self.world.ship.pos))
+            self.graphics.screen.blit(self.graphics.ship_image, tuple(self.world.ship.pos - self.graphics.camerapos))
+
+            for l in self.graphics.layers:
+                self.graphics.screen.blit(l.image, tuple(l.get_layer_pos()), None, l.blend_mode)
+
             pygame.display.flip()
 
     def handle_events(self):
@@ -52,3 +56,5 @@ class Game:
                     elif event.key == pygame.K_RIGHT:
                         self.world.ship.vel -= Vec2D(0.2, 0)
 
+    def calculate_camera(self):
+        self.graphics.camerapos = Vec2D(self.world.ship.pos.x - 100, 0)
