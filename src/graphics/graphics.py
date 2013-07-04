@@ -2,13 +2,14 @@ import pygame
 import os
 from util.vec2d import Vec2D
 import math
+from base.movable import Rocket
 
 
 class Graphics:
     RES_DIR = os.path.join('..', 'res')
     CAPTION = 'Cave Challenge'
     SHIP_IMAGE = 'ship.png'
-    SHIP_WIDTH = 50
+    SHIP_SCALE = 0.1
 
     class Layer:
         def __init__(self, image, tiled, speed, graphics, blend_mode):
@@ -52,9 +53,12 @@ class Graphics:
 
     def load_images(self):
         ship_tex = Graphics.load_image(Graphics.SHIP_IMAGE)
-        scale = Graphics.SHIP_WIDTH / ship_tex.get_width()
+        scale = Graphics.SHIP_SCALE * self.screen.get_height() / ship_tex.get_width()
         self.ship_image = pygame.transform.scale(ship_tex, Graphics.scale_size(ship_tex.get_size(), scale))
-        self.terrain = Graphics.load_image('testmap.png')
+
+        terrain_tex = Graphics.load_image('testmap.png')
+        scale = self.screen.get_height() / terrain_tex.get_height()
+        self.terrain = pygame.transform.scale(terrain_tex, Graphics.scale_size(terrain_tex.get_size(), scale))
 
         self.layers = []
 
@@ -82,4 +86,17 @@ class ShipSprite(pygame.sprite.Sprite):
 
 
 class RocketSprite(pygame.sprite.Sprite):
-    pass
+    def __init__(self, rocket, graphics, *groups):
+        super(RocketSprite, self).__init__(*groups)
+        self.image = pygame.surface.Surface(Rocket.SIZE)
+        self.image.fill((255, 0, 0))
+        self.rect = pygame.Rect(tuple(rocket.pos), tuple(rocket.size))
+        self.rocket = rocket
+        self.graphics = graphics
+
+    def update(self):
+        self.rect = pygame.Rect(tuple(self.rocket.pos - self.graphics.camerapos), tuple(self.rocket.size))
+
+
+
+
