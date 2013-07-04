@@ -1,7 +1,7 @@
 import pygame
 import os
 from util.vec2d import Vec2D
-from base.movable import Ship
+import math
 
 
 class Graphics:
@@ -13,9 +13,11 @@ class Graphics:
     class Layer:
         def __init__(self, image, tiled, speed, graphics, blend_mode):
             if tiled:
-                self.image = pygame.surface.Surface((image.get_width() * 2, image.get_height()))
-                self.image.blit(image, (0, 0))
-                self.image.blit(image, (image.get_width(), 0))
+                self.num_tiles = max(2, math.ceil(graphics.screen.get_width() / image.get_width() + 1))
+                self.image = pygame.surface.Surface((image.get_width() * self.num_tiles, image.get_height()))
+
+                for i in range(self.num_tiles):
+                    self.image.blit(image, (image.get_width() * i, 0))
 
             else:
                 self.image = image
@@ -27,7 +29,7 @@ class Graphics:
 
         def get_layer_pos(self):
             if self.tiled:
-                image_width = self.image.get_width() // 2
+                image_width = self.image.get_width() // self.num_tiles
 
                 posx = (self.graphics.camerapos.x * self.speed) % image_width
 
