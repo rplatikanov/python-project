@@ -27,3 +27,7 @@ class Rocket(Movable):
     def __init__(self, pos, size):
         Movable.__init__(self, pos, size)
         self.flight_time = 0
+        self.blown = False
+        
+    def get_blast_radius(self):
+        return 50

@@ -64,6 +64,13 @@ class Game:
                     elif event.key == pygame.K_RIGHT:
                         self.world.ship.vel -= Vec2D(0.2, 0)
 
+        for event in list(self.world.events):
+            self.world.events.remove(event)
+            if isinstance(event, RocketHitGround):
+                blast = pygame.surface.Surface((event.blast_radius * 2, event.blast_radius * 2), 0, self.graphics.terrain)
+                pygame.draw.circle(blast, (255, 255, 255), (event.blast_radius, event.blast_radius), event.blast_radius)
+                self.graphics.terrain.blit(blast, tuple(event.coords + -Vec2D(event.blast_radius, event.blast_radius)), None, pygame.BLEND_RGBA_SUB)
+
     def calculate_camera(self):
         self.graphics.camerapos = Vec2D(self.world.ship.pos.x - 100, 0)
 

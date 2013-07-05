@@ -1,4 +1,5 @@
 from collections import deque
+from base.events import RocketHitGround
 
 
 class World:
@@ -23,6 +24,8 @@ class World:
             rocket.pos += rocket.vel * dt
             if self.check_rocket_collisions(rocket):
                 destroyed.append(rocket)
+                rocket.blown = True
+                self.events.append(RocketHitGround(rocket.pos, rocket.get_blast_radius()))
 
         for rocket in destroyed:
             self.rockets.remove(rocket)

@@ -95,6 +95,9 @@ class RocketSprite(pygame.sprite.Sprite):
         self.graphics = graphics
 
     def update(self):
+        if self.rocket.blown:
+            self.kill();
+            
         self.rect = pygame.Rect(tuple(self.rocket.pos - self.graphics.camerapos), tuple(self.rocket.size))
 
 
