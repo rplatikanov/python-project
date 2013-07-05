@@ -19,11 +19,16 @@ class World:
 
         self.check_ship_collisions()
 
-        destroyed = []
+        destroyed = set()
         for rocket in self.rockets:
             rocket.pos += rocket.vel * dt
+            rocket.flight_time += dt
+            if rocket.flight_time > rocket.get_max_flight_time():
+                rocket.blown = True
+                destroyed.add(rocket)
+            
             if self.check_rocket_collisions(rocket):
-                destroyed.append(rocket)
+                destroyed.add(rocket)
                 rocket.blown = True
                 self.events.append(RocketHitGround(rocket.pos, rocket.get_blast_radius()))
 
