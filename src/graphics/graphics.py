@@ -15,7 +15,7 @@ class Graphics:
         def __init__(self, image, tiled, speed, graphics, blend_mode):
             if tiled:
                 self.num_tiles = max(2, math.ceil(graphics.screen.get_width() / image.get_width() + 1))
-                self.image = pygame.surface.Surface((image.get_width() * self.num_tiles, image.get_height()))
+                self.image = pygame.surface.Surface((image.get_width() * self.num_tiles, image.get_height()), 0, image)
 
                 for i in range(self.num_tiles):
                     self.image.blit(image, (image.get_width() * i, 0))
@@ -56,16 +56,46 @@ class Graphics:
         scale = Graphics.SHIP_SCALE * self.screen.get_height() / ship_tex.get_width()
         self.ship_image = pygame.transform.scale(ship_tex, Graphics.scale_size(ship_tex.get_size(), scale))
 
-        terrain_tex = Graphics.load_image('testmap.png')
+        terrain_tex = Graphics.load_image('map.png')
         scale = self.screen.get_height() / terrain_tex.get_height()
         self.terrain = pygame.transform.scale(terrain_tex, Graphics.scale_size(terrain_tex.get_size(), scale))
 
         self.layers = []
 
-        hazetex = Graphics.load_image('testhaze.png')
-        haze = Graphics.Layer(hazetex, True, 1.5, self, pygame.BLEND_RGBA_ADD)
-        self.layers.append(haze)
+        #=======================================================================
+        # bg0tex = Graphics.load_image('bg0.png')
+        # scale = self.screen.get_height() / bg0tex.get_height()
+        # bg0tex = pygame.transform.scale(bg0tex, Graphics.scale_size(bg0tex.get_size(), scale))
+        # bg0tex.fill((255, 255, 255, 40), None, pygame.BLEND_RGBA_MULT)
+        # bg0 = Graphics.Layer(bg0tex, True, 0.4, self, 0)
+        # self.layers.append(bg0)
+        #=======================================================================
+
+        #=======================================================================
+        # bg1tex = Graphics.load_image('bg1.png')
+        # scale = self.screen.get_height() / bg1tex.get_height()
+        # bg1tex = pygame.transform.scale(bg1tex, Graphics.scale_size(bg1tex.get_size(), scale))
+        # bg1tex.fill((255, 255, 255, 70), None, pygame.BLEND_RGBA_MULT)
+        # bg1 = Graphics.Layer(bg1tex, True, 0.7, self, 0)
+        # self.layers.append(bg1)
+        #=======================================================================
+
+        bg0tex = self.load_bg_image('bg0.png', 40)
+        bg0 = Graphics.Layer(bg0tex, True, 0.4, self, 0)
+        self.layers.append(bg0)
+
+        bg1tex = self.load_bg_image('bg1.png', 70)
+        bg1 = Graphics.Layer(bg1tex, True, 0.7, self, 0)
+        self.layers.append(bg1)
+
         self.layers.append(Graphics.Layer(self.terrain, False, 1, self, 0))
+
+    def load_bg_image(self, name, alpha):
+        bgtex = Graphics.load_image(name)
+        scale = self.screen.get_height() / bgtex.get_height()
+        bgtex = pygame.transform.scale(bgtex, Graphics.scale_size(bgtex.get_size(), scale))
+        bgtex.fill((255, 255, 255, alpha), None, pygame.BLEND_RGBA_MULT)
+        return bgtex
 
     @staticmethod
     def load_image(name):

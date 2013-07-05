@@ -7,8 +7,8 @@ from base.movable import *
 
 class Game:
     def __init__(self):
-        height = 480
-        self.graphics = Graphics(320, height)
+        height = 600
+        self.graphics = Graphics(1200, height)
         self.world = World(self.graphics.terrain.get_width(), height, self.graphics.terrain)
 
         self.world.ship = Ship(Vec2D(100, 100), Vec2D(self.graphics.ship_image.get_width(), self.graphics.ship_image.get_height()))
@@ -29,12 +29,13 @@ class Game:
 
             self.rockets.update()
 
-            self.graphics.screen.fill((10, 50, 200))
-            self.graphics.screen.blit(self.graphics.ship_image, tuple(self.world.ship.pos - self.graphics.camerapos))
-            self.rockets.draw(self.graphics.screen)
-
+            self.graphics.screen.fill((40, 40, 40))
+            
             for l in self.graphics.layers:
                 self.graphics.screen.blit(l.image, tuple(l.get_layer_pos()), None, l.blend_mode)
+            
+            self.graphics.screen.blit(self.graphics.ship_image, tuple(self.world.ship.pos - self.graphics.camerapos))
+            self.rockets.draw(self.graphics.screen)
 
             pygame.display.flip()
 
