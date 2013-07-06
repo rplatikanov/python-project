@@ -3,6 +3,11 @@ from base.events import RocketHitGround, EnemyShoot, ShipDead
 
 
 class World:
+    SHIP_ACC = 0.0007
+    SHIP_SPEED = 0.1
+    SPEED_MULT = 0.85
+    ENEMY_FIRE_INTERVAL = 1000
+
     def __init__(self, width, height, collision_map):
         self.width = width
         self.height = height
@@ -19,19 +24,19 @@ class World:
                 self.ship.pos.x = 0
 
             if self.ship.power_up:
-                self.ship.vel.y -= 0.0007 * dt * dt / 2
+                self.ship.vel.y -= World.SHIP_ACC * dt * dt / 2
             if self.ship.power_down:
-                self.ship.vel.y += 0.0007 * dt * dt / 2
+                self.ship.vel.y += World.SHIP_ACC * dt * dt / 2
             if self.ship.power_forward:
-                self.ship.vel.x = 0.1
+                self.ship.vel.x = World.SHIP_SPEED
 
-            self.ship.vel.y *= 0.85
+            self.ship.vel.y *= World.SPEED_MULT
 
             self.check_ship_collisions()
 
         for enemy in self.enemies:
             enemy.timer += dt
-            if enemy.timer > 1000:
+            if enemy.timer > World.ENEMY_FIRE_INTERVAL:
                 enemy.timer = 0
                 if enemy.is_in_range(self.ship):
                     rocket = enemy.shoot()
@@ -75,8 +80,12 @@ class World:
             collision = True
 
         if not collision:
-            for y in range(int(self.ship.pos.y), int(self.ship.pos.y + self.ship.size.y)):
-                for x in range(int(self.ship.pos.x), int(self.ship.pos.x + self.ship.size.x)):
+            for y in range(int(self.ship.pos.y),
+                           int(self.ship.pos.y + self.ship.size.y)):
+
+                for x in range(int(self.ship.pos.x),
+                               int(self.ship.pos.x + self.ship.size.x)):
+
                     c = self.collision_map.get_at((x, y))
                     if c[3] != 0:
                         collision = True
@@ -93,15 +102,20 @@ class World:
             collision = True
 
         if not collision:
-            for y in range(int(rocket.pos.y), int(rocket.pos.y + rocket.size.y)):
-                for x in range(int(rocket.pos.x), int(rocket.pos.x + rocket.size.x)):
+            for y in range(int(rocket.pos.y),
+                           int(rocket.pos.y + rocket.size.y)):
+
+                for x in range(int(rocket.pos.x),
+                               int(rocket.pos.x + rocket.size.x)):
+
                     c = self.collision_map.get_at((x, y))
                     if c[3] != 0:
                         collision = True
 
         if collision:
             rocket.alive = False
-            self.events.append(RocketHitGround(rocket.pos, rocket.get_blast_radius()))
+            self.events.append(RocketHitGround(rocket.pos,
+                                               rocket.get_blast_radius()))
 
     def check_rocket_movable_collisions(self, rocket):
         for enemy in list(self.enemies):
@@ -114,4 +128,3 @@ class World:
             self.ship.alive = False
             rocket.alive = False
             self.events.append(ShipDead())
-

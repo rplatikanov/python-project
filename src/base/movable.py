@@ -21,8 +21,10 @@ class Ship(Movable):
         self.power_forward = True
 
     def shoot_rocket(self):
-        rocket = Rocket(Vec2D(self.pos.x + self.size.x, self.pos.y + self.size.y / 2), Vec2D(Rocket.SIZE[0], Rocket.SIZE[1]))
-        rocket.vel = Vec2D(0.5, 0)
+        x = self.pos.x + self.size.x
+        y = self.pos.y + self.size.y / 2
+        rocket = Rocket(Vec2D(x, y), Vec2D(Rocket.SIZE[0], Rocket.SIZE[1]))
+        rocket.vel = Vec2D(rocket.get_speed(), 0)
         return rocket
 
     def set_power_up(self, power):
@@ -48,17 +50,24 @@ class Rocket(Movable):
     def get_max_flight_time(self):
         return 3000
 
+    def get_speed(self):
+        return 0.5
+
 
 class Enemy(Movable):
+    DEFAULT_RANGE = 1000
+
     def __init__(self, pos, size):
         Movable.__init__(self, pos, size)
         self.timer = 0
 
     def is_in_range(self, target):
         distance = self.pos.x - target.pos.x
-        return distance < 1000 and distance >= 0
+        return distance < Enemy.DEFAULT_RANGE and distance >= 0
 
     def shoot(self):
-        rocket = Rocket(Vec2D(self.pos.x - Rocket.SIZE[0], self.pos.y + self.size.y / 2), Vec2D(Rocket.SIZE[0], Rocket.SIZE[1]))
-        rocket.vel = Vec2D(-0.5, 0)
+        x = self.pos.x - Rocket.SIZE[0]
+        y = self.pos.y + self.size.y / 2
+        rocket = Rocket(Vec2D(x, y), Vec2D(Rocket.SIZE[0], Rocket.SIZE[1]))
+        rocket.vel = Vec2D(-rocket.get_speed(), 0)
         return rocket
