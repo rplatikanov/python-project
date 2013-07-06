@@ -9,7 +9,8 @@ class Graphics:
     RES_DIR = os.path.join('..', 'res')
     CAPTION = 'Cave Challenge'
     SHIP_IMAGE = 'ship.png'
-    SHIP_SCALE = 0.1
+    ENEMY_IMAGE = 'enemy.png'
+    SHIP_SCALE = 0.07
 
     class Layer:
         def __init__(self, image, tiled, speed, graphics, blend_mode):
@@ -56,29 +57,15 @@ class Graphics:
         scale = Graphics.SHIP_SCALE * self.screen.get_height() / ship_tex.get_width()
         self.ship_image = pygame.transform.scale(ship_tex, Graphics.scale_size(ship_tex.get_size(), scale))
 
+        enemy_tex = Graphics.load_image(Graphics.ENEMY_IMAGE)
+        scale = Graphics.SHIP_SCALE * self.screen.get_height() / enemy_tex.get_width()
+        self.enemy_image = pygame.transform.scale(enemy_tex, Graphics.scale_size(enemy_tex.get_size(), scale))
+
         terrain_tex = Graphics.load_image('map.png')
         scale = self.screen.get_height() / terrain_tex.get_height()
         self.terrain = pygame.transform.scale(terrain_tex, Graphics.scale_size(terrain_tex.get_size(), scale))
 
         self.layers = []
-
-        #=======================================================================
-        # bg0tex = Graphics.load_image('bg0.png')
-        # scale = self.screen.get_height() / bg0tex.get_height()
-        # bg0tex = pygame.transform.scale(bg0tex, Graphics.scale_size(bg0tex.get_size(), scale))
-        # bg0tex.fill((255, 255, 255, 40), None, pygame.BLEND_RGBA_MULT)
-        # bg0 = Graphics.Layer(bg0tex, True, 0.4, self, 0)
-        # self.layers.append(bg0)
-        #=======================================================================
-
-        #=======================================================================
-        # bg1tex = Graphics.load_image('bg1.png')
-        # scale = self.screen.get_height() / bg1tex.get_height()
-        # bg1tex = pygame.transform.scale(bg1tex, Graphics.scale_size(bg1tex.get_size(), scale))
-        # bg1tex.fill((255, 255, 255, 70), None, pygame.BLEND_RGBA_MULT)
-        # bg1 = Graphics.Layer(bg1tex, True, 0.7, self, 0)
-        # self.layers.append(bg1)
-        #=======================================================================
 
         bg0tex = self.load_bg_image('bg0.png', 40)
         bg0 = Graphics.Layer(bg0tex, True, 0.4, self, 0)
@@ -120,15 +107,30 @@ class RocketSprite(pygame.sprite.Sprite):
         super(RocketSprite, self).__init__(*groups)
         self.image = pygame.surface.Surface(Rocket.SIZE)
         self.image.fill((255, 0, 0))
-        self.rect = pygame.Rect(tuple(rocket.pos), tuple(rocket.size))
+        #self.rect = pygame.Rect(tuple(rocket.pos), tuple(rocket.size))
         self.rocket = rocket
         self.graphics = graphics
 
     def update(self):
-        if self.rocket.blown:
+        if not self.rocket.alive:
             self.kill()
 
         self.rect = pygame.Rect(tuple(self.rocket.pos - self.graphics.camerapos), tuple(self.rocket.size))
+
+
+class EnemySprite(pygame.sprite.Sprite):
+    def __init__(self, enemy, graphics, *groups):
+        super(EnemySprite, self).__init__(*groups)
+        self.image = graphics.enemy_image
+        #self.rect = pygame.Rect(tuple(enemy.pos), tuple(enemy.size))
+        self.enemy = enemy
+        self.graphics = graphics
+        
+    def update(self):
+        if not self.enemy.alive:
+            self.kill()
+            
+        self.rect = pygame.Rect(tuple(self.enemy.pos - self.graphics.camerapos), tuple(self.enemy.size))
 
 
 
